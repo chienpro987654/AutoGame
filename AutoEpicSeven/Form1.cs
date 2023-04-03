@@ -20,6 +20,8 @@ using System.IO;
 using SixLabors.ImageSharp;
 using static System.Windows.Forms.LinkLabel;
 using System.Reflection.Emit;
+using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace AutoEpicSeven
 {
@@ -63,7 +65,7 @@ namespace AutoEpicSeven
             }
         }
 
-        private void captureScreenshot()
+        private void captureScreenshot(String path)
         {
             //Cap screenshot from phone
             Process cmd = new Process();
@@ -74,7 +76,7 @@ namespace AutoEpicSeven
             cmd.StartInfo.UseShellExecute = false;
             cmd.Start();
 
-            cmd.StandardInput.WriteLine("adb exec-out screencap -p > D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\screenshot.png");
+            cmd.StandardInput.WriteLine("adb exec-out screencap -p > "+path);
             cmd.StandardInput.Flush();
             cmd.StandardInput.Close();
             cmd.WaitForExit();
@@ -136,9 +138,9 @@ namespace AutoEpicSeven
             Debug.WriteLine(cmd.StandardOutput.ReadToEnd());
         }
 
-        private int findRetry()
+        private int findRetry(String path)
         {
-            using (Bitmap myBitmap = new Bitmap(@"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\screenshot.png"))
+            using (Bitmap myBitmap = new Bitmap(path))
             {
                 int[] pixels = { 270, 435, 600, 765, 935 };
 
@@ -178,8 +180,16 @@ namespace AutoEpicSeven
             Bitmap formatted_source = croppedSource.Clone(rec, PixelFormat.Format24bppRgb);
             Bitmap formatted_template = croppedTemplate.Clone(rec, PixelFormat.Format24bppRgb);
 
-            formatted_source.Save(@"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\non_format_s.png");
-            formatted_template.Save(@"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\non_format_t.png");
+            var outPutDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+
+            var sourceComb = Path.Combine(outPutDirectory, "images\\non_format_s.png");
+            var templateComb = Path.Combine(outPutDirectory, "images\\non_format_t.png");
+
+            String sourcePath = new Uri(sourceComb).LocalPath;
+            String templatePath = new Uri(templateComb).LocalPath;
+
+            formatted_source.Save(sourcePath);
+            formatted_template.Save(templatePath);
 
             ExhaustiveTemplateMatching tm = new ExhaustiveTemplateMatching(0);
             // compare two images
@@ -232,22 +242,49 @@ namespace AutoEpicSeven
 
         private void clickEvent()
         {
-            String s1 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\retry_confirm_740_650_670_140.png";
-            String s2 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\start_1550_960_120_60.png";
-            String s3 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\fighting_2015_110_115_110.png";
-            String s4 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\yeild_860_355_440_115.png";
-            string s5 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\exit_760_600_650_130.png";
-            String s6 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\defeat_confirm_800_260_560_140.png";
+            String s1, s2, s3, s4, s5, s6;
+            var outPutDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+
+            var iconPath = Path.Combine(outPutDirectory, "images\\retry_confirm_740_650_670_140.png");
+            s1 = new Uri(iconPath).LocalPath;
+
+            iconPath = Path.Combine(outPutDirectory, "images\\start_1550_960_120_60.png");
+            s2 = new Uri(iconPath).LocalPath;
+
+            iconPath = Path.Combine(outPutDirectory, "images\\fighting_2015_110_115_110.png");
+            s3 = new Uri(iconPath).LocalPath;
+
+            iconPath = Path.Combine(outPutDirectory, "images\\yield_860_355_440_115.png");
+            s4 = new Uri(iconPath).LocalPath;
+
+            iconPath = Path.Combine(outPutDirectory, "images\\exit_760_600_650_130.png");
+            s5 = new Uri(iconPath).LocalPath;
+
+            iconPath = Path.Combine(outPutDirectory, "images\\defeat_confirm_800_260_560_140.png");
+            s6 = new Uri(iconPath).LocalPath;
+            //String s1 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\retry_confirm_740_650_670_140.png";
+            //String s1 = @"images\start_1550_960_120_60.png";
+            //String s2 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\start_1550_960_120_60.png";
+            //String s3 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\fighting_2015_110_115_110.png";
+            //String s4 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\yield_860_355_440_115.png";
+            //string s5 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\exit_760_600_650_130.png";
+            //String s6 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\defeat_confirm_800_260_560_140.png";
 
             String[] sources = { s1, s2, s3, s4, s5, s6 };
+
+            //the screenshot will be cut out using these rectangles and compare it to the source images above, to reduce the time of comparison process
             int[,] recs = new int[,] { { 740, 650, 670, 140 }, { 1550, 960, 120, 60 }, { 2015, 110, 115, 110 }, { 860, 355, 440, 115 }, { 760, 600, 650, 130 }, { 800, 260, 560, 140 } };
 
+            //coordinates to click correspond to each stages, they have ranges to avoid being recognized as illegal action
             int[,] clicks = new int[,] { { 1155, 1320, 700, 740 }, { 1550, 1650, 970, 1010 }, { 2100, 2110, 35, 50 }, { 970, 1200, 400, 430 }, { 1165, 1310, 640, 680 }, { 1915, 2050, 970, 1010 } };
 
             int[] sleepTime = { 7000, 1000, 1000, 1000 ,1000};
 
-            File.Delete(@"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\screenshot.png");
-            captureScreenshot();
+            //File.Delete(@"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\screenshot.png");
+            iconPath = Path.Combine(outPutDirectory, "images\\screenshot.png");
+            string screenShot = new Uri(iconPath).LocalPath;
+            File.Delete(screenShot);
+            captureScreenshot(screenShot);
             Debug.WriteLine("Captured");
             Thread.Sleep(1000);
 
@@ -255,32 +292,35 @@ namespace AutoEpicSeven
 
             for(int i =0;i<3; i++)
             {
-                int x = findRetry();
+                int x = findRetry(screenShot);
                 clickXY(1600, 1675, x, x + 50); //Click Retry Button
                 Thread.Sleep(1000);
-                captureScreenshot();
+                captureScreenshot(screenShot);
                 Thread.Sleep(1000);
                 Bitmap croppedSource = new Bitmap(sources[0]);
-                using (Bitmap template = new Bitmap(@"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\screenshot.png"))
+                using (Bitmap template = new Bitmap(screenShot))
                 {
                     if (compareImage(croppedSource, template, recs[0, 0], recs[0, 1], recs[0, 2], recs[0, 3]))
                     {
                         Thread.Sleep(1000);
-                        clickXY(clicks[0, 0], clicks[0, 1], clicks[0, 2], clicks[0, 3]); //Click button
+                        clickXY(clicks[0, 0], clicks[0, 1], clicks[0, 2], clicks[0, 3]); //Click confirm button
                         Thread.Sleep(3000);
                         break;
                     }
                     else
                     {
                         Debug.WriteLine("Captured");
-                        clickXY(55, 70, 45, 60);
+                        clickXY(55, 70, 45, 60); // Click back to find again
                         Thread.Sleep(1000);
                     }
                 }
 
             }
 
-            int count = 3;
+            int count = 3; // variable that store retry times
+
+            //Use i=2 because element [0] of the array has been used in the code above, 
+            // and it performs click and then conducts the comparison, so the element [1+1] will be used.
 
             for (int i = 2; i <= 6; i++)
             {
@@ -292,13 +332,13 @@ namespace AutoEpicSeven
                         clickXY(clicks[i-1, 0], clicks[i-1, 1], clicks[i-1, 2], clicks[i-1, 3]); //Click button
                     }
                     Thread.Sleep(sleepTime[i - 2]);
-                    captureScreenshot();
+                    captureScreenshot(screenShot);
                     Debug.WriteLine("i="+i);
                     Thread.Sleep(1000);
                     if (i == 6) break;
                     Bitmap croppedSource = new Bitmap(sources[i]);
-                    Debug.WriteLine(sources[i].Substring(49, 10));
-                    using (Bitmap template = new Bitmap(@"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\screenshot.png"))
+                    Debug.WriteLine(sources[i].Substring(63, 10));
+                    using (Bitmap template = new Bitmap(screenShot))
                     {
                         if (!compareImage(croppedSource, template, recs[i, 0], recs[i, 1], recs[i, 2], recs[i, 3]))
                         {
@@ -324,7 +364,10 @@ namespace AutoEpicSeven
 
         private void RunBtn_Click(object sender, EventArgs e)
         {
-            captureScreenshot();
+            var outPutDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+            var iconPath = Path.Combine(outPutDirectory, "images\\screenshot.png");
+            string screenShot = new Uri(iconPath).LocalPath;
+            captureScreenshot(screenShot);
             int flag = 0;
             try
             {
