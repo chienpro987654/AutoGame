@@ -142,12 +142,15 @@ namespace AutoEpicSeven
         {
             using (Bitmap myBitmap = new Bitmap(path))
             {
+                //Y of Fight buttons and Retry button's coordinates
                 int[] pixels = { 270, 435, 600, 765, 935 };
 
                 for (int i = 0; i <= 4; i++)
                 {
+                    //Get pixel
                     System.Drawing.Color pixelColor = myBitmap.GetPixel(1635, pixels[i]);
                     //Debug.WriteLine(pixelColor.ToString());
+                    //Compare the color to distinguish the button need to be clicked.
                     if (pixelColor.R > 20)
                         return pixels[i];
                 }
@@ -219,6 +222,7 @@ namespace AutoEpicSeven
             Crop filter = new Crop(new System.Drawing.Rectangle(760, 600, 650, 130));
             // apply the filter
             Bitmap newImage = filter.Apply(image);
+            //Save the image
             newImage.Save(@"images\croppedImage.png");
         }
 
