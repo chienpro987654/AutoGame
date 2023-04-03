@@ -83,31 +83,31 @@ namespace AutoEpicSeven
             Debug.WriteLine(cmd.StandardOutput.ReadToEnd());
         }
 
-        private string getFlag()
-        {
-            //Get number of flags in screenshot
-            Bitmap image = new Bitmap(@"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\screenshot.png");
-            Crop filter = new Crop(new System.Drawing.Rectangle(1120, 30, 93, 40));
-            // apply the filter
-            Bitmap newImage = filter.Apply(image);
-            newImage.Save(@"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\flag.png");
-            //location to testdata for eng.traineddata
-            var path = @"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\tessdata";
-            //your sample image location
-            var sourceFilePath = @"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\flag.png";
-            using (var engine = new TesseractEngine(path, "eng"))
-            {
-                engine.SetVariable("user_defined_dpi", "70"); //set dpi for supressing warning
-                using (var img = Pix.LoadFromFile(sourceFilePath))
-                {
-                    using (var page = engine.Process(img))
-                    {
-                        var text = page.GetText();
-                        return text;
-                    }
-                }
-            }
-        }
+        //private string getFlag()
+        //{
+        //    //Get number of flags in screenshot
+        //    Bitmap image = new Bitmap(@"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\screenshot.png");
+        //    Crop filter = new Crop(new System.Drawing.Rectangle(1120, 30, 93, 40));
+        //    // apply the filter
+        //    Bitmap newImage = filter.Apply(image);
+        //    newImage.Save(@"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\flag.png");
+        //    //location to testdata for eng.traineddata
+        //    var path = @"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\tessdata";
+        //    //your sample image location
+        //    var sourceFilePath = @"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\flag.png";
+        //    using (var engine = new TesseractEngine(path, "eng"))
+        //    {
+        //        engine.SetVariable("user_defined_dpi", "70"); //set dpi for supressing warning
+        //        using (var img = Pix.LoadFromFile(sourceFilePath))
+        //        {
+        //            using (var page = engine.Process(img))
+        //            {
+        //                var text = page.GetText();
+        //                return text;
+        //            }
+        //        }
+        //    }
+        //}
 
         private void clickXY(int x1, int x2,int y1, int y2)
         {
@@ -209,11 +209,17 @@ namespace AutoEpicSeven
 
         private void CropBtn_Click(object sender, EventArgs e)
         {
-            Bitmap image = AForge.Imaging.Image.FromFile(@"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\screenshot.png");
+            var outPutDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+            var combinePath = Path.Combine(outPutDirectory, "images\\screenshot.png");
+            string screenShot = new Uri(combinePath).LocalPath;
+            captureScreenshot(screenShot);
+            //Get from sources
+            Bitmap image = AForge.Imaging.Image.FromFile(@"images\screenshot.png");
+            //Change coordinates of the rectangle here            x   y  width height
             Crop filter = new Crop(new System.Drawing.Rectangle(760, 600, 650, 130));
             // apply the filter
             Bitmap newImage = filter.Apply(image);
-            newImage.Save(@"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\exit_760_600_650_130.png");
+            newImage.Save(@"images\croppedImage.png");
         }
 
         private void TestBtn_Click(object sender, EventArgs e)
@@ -245,30 +251,23 @@ namespace AutoEpicSeven
             String s1, s2, s3, s4, s5, s6;
             var outPutDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
 
-            var iconPath = Path.Combine(outPutDirectory, "images\\retry_confirm_740_650_670_140.png");
-            s1 = new Uri(iconPath).LocalPath;
+            var combinePath = Path.Combine(outPutDirectory, "images\\retry_confirm_740_650_670_140.png");
+            s1 = new Uri(combinePath).LocalPath;
 
-            iconPath = Path.Combine(outPutDirectory, "images\\start_1550_960_120_60.png");
-            s2 = new Uri(iconPath).LocalPath;
+            combinePath = Path.Combine(outPutDirectory, "images\\start_1550_960_120_60.png");
+            s2 = new Uri(combinePath).LocalPath;
 
-            iconPath = Path.Combine(outPutDirectory, "images\\fighting_2015_110_115_110.png");
-            s3 = new Uri(iconPath).LocalPath;
+            combinePath = Path.Combine(outPutDirectory, "images\\fighting_2015_110_115_110.png");
+            s3 = new Uri(combinePath).LocalPath;
 
-            iconPath = Path.Combine(outPutDirectory, "images\\yield_860_355_440_115.png");
-            s4 = new Uri(iconPath).LocalPath;
+            combinePath = Path.Combine(outPutDirectory, "images\\yield_860_355_440_115.png");
+            s4 = new Uri(combinePath).LocalPath;
 
-            iconPath = Path.Combine(outPutDirectory, "images\\exit_760_600_650_130.png");
-            s5 = new Uri(iconPath).LocalPath;
+            combinePath = Path.Combine(outPutDirectory, "images\\exit_760_600_650_130.png");
+            s5 = new Uri(combinePath).LocalPath;
 
-            iconPath = Path.Combine(outPutDirectory, "images\\defeat_confirm_800_260_560_140.png");
-            s6 = new Uri(iconPath).LocalPath;
-            //String s1 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\retry_confirm_740_650_670_140.png";
-            //String s1 = @"images\start_1550_960_120_60.png";
-            //String s2 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\start_1550_960_120_60.png";
-            //String s3 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\fighting_2015_110_115_110.png";
-            //String s4 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\yield_860_355_440_115.png";
-            //string s5 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\exit_760_600_650_130.png";
-            //String s6 = "D:\\Hoc_tap\\C#\\AutoEpicSeven\\AutoEpicSeven\\images\\defeat_confirm_800_260_560_140.png";
+            combinePath = Path.Combine(outPutDirectory, "images\\defeat_confirm_800_260_560_140.png");
+            s6 = new Uri(combinePath).LocalPath;
 
             String[] sources = { s1, s2, s3, s4, s5, s6 };
 
@@ -280,9 +279,8 @@ namespace AutoEpicSeven
 
             int[] sleepTime = { 7000, 1000, 1000, 1000 ,1000};
 
-            //File.Delete(@"D:\Hoc_tap\C#\AutoEpicSeven\AutoEpicSeven\images\screenshot.png");
-            iconPath = Path.Combine(outPutDirectory, "images\\screenshot.png");
-            string screenShot = new Uri(iconPath).LocalPath;
+            combinePath = Path.Combine(outPutDirectory, "images\\screenshot.png");
+            string screenShot = new Uri(combinePath).LocalPath;
             File.Delete(screenShot);
             captureScreenshot(screenShot);
             Debug.WriteLine("Captured");
@@ -365,8 +363,8 @@ namespace AutoEpicSeven
         private void RunBtn_Click(object sender, EventArgs e)
         {
             var outPutDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
-            var iconPath = Path.Combine(outPutDirectory, "images\\screenshot.png");
-            string screenShot = new Uri(iconPath).LocalPath;
+            var combinePath = Path.Combine(outPutDirectory, "images\\screenshot.png");
+            string screenShot = new Uri(combinePath).LocalPath;
             captureScreenshot(screenShot);
             int flag = 0;
             try
